@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=aires
 Tags: taxonomy, category, primary, select, tax, cat
 Requires at least: 4.6
 Tested up to: 4.9.8
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,9 @@ Select the primary category
 2. Activate the `WordPress Primary Category` plugin via the plugin admin page
 
 == Changelog ==
+
+= 1.0.1 =
+bugfix imposible to remove primary category once it has been set - Thanks to Mirko
 
 = 1.0.0 =
 initial version

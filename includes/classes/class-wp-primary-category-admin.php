@@ -44,18 +44,13 @@ if ( ! class_exists( 'WP_Primary_Category_Admin' ) ) {
 				isset( $_POST['wp_primary_category'], $_POST['wp_primary_category_nonce'] )
 				&& wp_verify_nonce( sanitize_key( $_POST['wp_primary_category_nonce'] ), 'wp-primary-category-inputs' )
 			) {
+				self::_delete_all_primary_categories( $post_id );
+
 				// phpcs:ignore -- sanitization in WP_Primary_Category::validate_data:104
 				$data = wp_unslash( $_POST['wp_primary_category'] );
 				$data = WP_Primary_Category::validate_data( $data, $post_id );
 
 				if ( ! empty( $data ) ) {
-					$option     = WP_Primary_Category_Settings::get_option();
-					$taxonomies = array_keys( $option );
-
-					foreach ( $taxonomies as $name ) {
-						delete_post_meta( $post_id, '_wp_primary_category_' . $name );
-					}
-
 					foreach ( $data as $taxonomy => $term_id ) {
 						update_post_meta( $post_id, '_wp_primary_category_' . $taxonomy, $term_id );
 					}
@@ -73,6 +68,22 @@ if ( ! class_exists( 'WP_Primary_Category_Admin' ) ) {
 			}
 
 			return self::$option;
+		}
+
+		private static function _delete_all_primary_categories( $post_id ) {
+			if ( ! is_numeric( $post_id ) || ! $post_id ) {
+				return false;
+			}
+
+			self::_get_option();
+
+			if ( ! empty( self::$option ) ) {
+				foreach ( self::$option as $taxonomy ) {
+					delete_post_meta( $post_id, '_wp_primary_category_' . $taxonomy );
+				}
+			}
+
+			delete_post_meta( $post_id, '_wp_primary_category' );
 		}
 	}
 }

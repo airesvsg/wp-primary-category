@@ -4,7 +4,7 @@
  * Description: Select the primary category
  * Author: Aires Gonçalves
  * Author URI: http://github.com/airesvsg
- * Version: 1.0.0
+ * Version: 1.0.1
  * Plugin URI: http://github.com/airesvsg/wp-primary-category
  */
 
