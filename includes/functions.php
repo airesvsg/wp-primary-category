@@ -4,6 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! function_exists( 'get_primary_categories' ) ) {
+	function get_primary_categories( $post = null, $output = OBJECT ) {
+		return WP_Primary_Category::get_primary_categories( $post, $output );
+	}
+}
+
 if ( ! function_exists( 'get_primary_category' ) ) {
 	function get_primary_category( $taxonomy, $post = null, $output = OBJECT ) {
 		return WP_Primary_Category::get_primary_category( $taxonomy, $post, $output );

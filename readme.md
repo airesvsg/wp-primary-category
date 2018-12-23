@@ -12,6 +12,7 @@ https://wordpress.org/plugins/wp-primary-category
 - [Filters](#filters)
 - [Shortcode](#shortcode)
 - [WP_Query](#wp_query)
+- [REST API](#rest-api)
 - [To Do](#to-do)
 
 Installation
@@ -51,6 +52,7 @@ Functions
 ====
 | Name | Argument(s) |
 |------|-------------|
+| get_primary_categories | mixed ( int, WP_Post, NULL ) **$post**<br>*required*<br>--<br>string **$output**<br>*default value:* OBJECT<br>*others values:* OBJECT, ARRAY_A, ARRAY_N or "ID"<br>*optional* |
 | get_primary_category | mixed ( int, WP_Term, object, string ) **$taxonomy**<br>*required*<br>--<br>mixed ( int, WP_Post, NULL ) **$post**<br>*default value:* NULL<br>*optional*<br>--<br>string **$output**<br>*default value:* OBJECT<br>*others values:* OBJECT, ARRAY_A, ARRAY_N or "ID"<br>*optional* |
 | the_primary_category | mixed ( int, WP_Term, object, string ) **$taxonomy**<br>*required*<br>--<br>mixed ( int, WP_Post, NULL ) **$post**<br>*default value:* NULL<br>*optional*<br>--<br>string **$output**<br>*default value:* "link"<br>*others values:* "name"<br>*optional*--<br>string **$echo**<br>*default value:* true<br>*optional* |
 | is_primary_category | mixed ( int, WP_Term, object ) **$term**<br>*required*<br>--<br>mixed ( string, NULL ) **$taxonomy**<br>*default value:* NULL<br>*optional*<br>--<br>mixed ( int, WP_Post, NULL ) **$post**<br>*default value:* NULL<br>*optional* |
@@ -93,6 +95,8 @@ Filters
 | wp_primary_category_taxonomies_args | array **$args** |
 | wp_primary_category_taxonomies | mixed ( array, boolean ) **$taxonomies** |
 | wp_primary_category_html | string **$html**<br>mixed ( int, WP_Term, object, string ) **$taxonomy**<br>mixed ( int, WP_Post, NULL ) **$post**<br>string **$output** |
+| wp_primary_category_rest_api_output | string ( OBJECT, ARRAY_A, ARRAY_N or "ID" ) **$output**<br> array **$request**  |
+| wp_primary_category_rest_api_data | array **$data**<br> array **$request** |
 
 **How to use the filters?**
 
@@ -163,6 +167,87 @@ if ( $query->have_posts() ) {
 }
 ```
 https://codex.wordpress.org/Class_Reference/WP_Query#Custom_Field_Parameters
+
+REST API
+====
+
+**Endpoint**:
+`/wp-json/wp/v2/posts/1`
+
+**Default answer:**
+```JSON
+{
+	"id": 1,
+	"title": {
+		"rendered": "Hello world!"
+	},
+	...
+	"primary_categories": {
+		"category": 1,
+		"genre": 2
+	},
+	...
+}
+```
+
+**Use the filter below to change the answer:**
+```PHP
+add_filter( 'wp_primary_category_rest_api_data', function( $data ) {
+	if ( isset( $data['genre'] ) ) {
+		unset( $data['genre'] );
+	}
+
+	return $data;
+} );
+```
+
+**The new answer:**
+```JSON
+{
+	"id": 1,
+	"title": {
+		"rendered": "Hello world!"
+	},
+	...
+	"primary_categories": {
+		"category": 1
+	},
+	...
+}
+```
+
+**Use the filter below to change the output:**
+```PHP
+add_filter( 'wp_primary_category_rest_api_output', function() {
+	return OBJECT; // OBJECT, ARRAY_A, ARRAY_N or 'ID'
+} );
+```
+
+**The new answer:**
+```JSON
+{
+	"id": 1,
+	"title": {
+		"rendered": "Hello world!"
+	},
+	...
+	"primary_categories": {
+		"category": {
+			"term_id": 1,
+			"name": "My category",
+			"slug": "my-category",
+			"term_group": 0,
+			"term_taxonomy_id": 2,
+			"taxonomy": "category",
+			"description": "",
+			"parent": 0,
+			"count": 1,
+			"filter": "raw"
+		}
+	},
+	...
+}
+```
 
 To Do
 ====

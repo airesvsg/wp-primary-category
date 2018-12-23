@@ -15,14 +15,38 @@ if ( ! class_exists( 'WP_Primary_Category' ) ) {
 			add_action( 'admin_init', array( 'WP_Primary_Category_Admin', 'init' ) );
 			add_action( 'wp_loaded', array( 'WP_Primary_Category_Settings', 'init' ) );
 			add_action( 'init', array( 'WP_Primary_Category_Shortcode', 'init' ) );
-
+			add_action( 'rest_api_init', array( 'WP_Primary_Category_REST_API', 'init' ) );
 		}
 
 		public static function includes() {
 			require_once WP_PC_PLUGIN_PATH . 'includes/classes/class-wp-primary-category-admin.php';
 			require_once WP_PC_PLUGIN_PATH . 'includes/classes/class-wp-primary-category-settings.php';
 			require_once WP_PC_PLUGIN_PATH . 'includes/classes/class-wp-primary-category-shortcode.php';
+			require_once WP_PC_PLUGIN_PATH . 'includes/classes/class-wp-primary-category-rest-api.php';
 			require_once WP_PC_PLUGIN_PATH . 'includes/functions.php';
+		}
+
+		public static function get_primary_categories( $post = null, $output = OBJECT ) {
+			$post_id = self::_ge_post_id( $post );
+
+			if ( ! $post_id ) {
+				return false;
+			}
+
+			$post_type  = get_post_type( $post_id );
+			$taxonomies = WP_Primary_Category_Settings::get_option( $post_type );
+
+			$data = array();
+			if ( $taxonomies ) {
+				foreach ( $taxonomies as $taxonomy ) {
+					$category = get_primary_category( $taxonomy, $post_id, $output );
+					if ( $category ) {
+						$data[ $taxonomy ] = $category;
+					}
+				}
+			}
+
+			return $data;
 		}
 
 		public static function get_primary_category( $taxonomy, $post = null, $output = OBJECT ) {
